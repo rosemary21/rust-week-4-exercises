@@ -92,7 +92,12 @@ impl LegacyTransactionBuilder {
     }
 
     pub fn build(self) -> LegacyTransaction {
-        // TODO: Build and return the final LegacyTransaction
+        LegacyTransaction {
+            version: self.version,
+            inputs: self.inputs,
+            outputs: self.outputs,
+            lock_time: self.lock_time,
+        }
     }
 }
 
@@ -118,7 +123,22 @@ pub struct OutPoint {
 
 // Simple CLI argument parser
 pub fn parse_cli_args(args: &[String]) -> Result<CliCommand, BitcoinError> {
-    // TODO: Match args to "send" or "balance" commands and parse required arguments
+    match args.first().map(|s| s.as_str()) {
+        Some("send") => {
+            let amount_str = args
+                .get(1)
+                .ok_or_else(|| BitcoinError::ParseError("missing amount".to_string()))?;
+            let address = args
+                .get(2)
+                .ok_or_else(|| BitcoinError::ParseError("missing address".to_string()))?;
+            let amount = u64::from_str(amount_str)
+                .map_err(|e| BitcoinError::ParseError(e.to_string()))?;
+            Ok(CliCommand::Send { amount, address: address.clone() })
+        }
+        Some("balance") => Ok(CliCommand::Balance),
+        Some(cmd) => Err(BitcoinError::ParseError(format!("unknown command: {}", cmd))),
+        None => Err(BitcoinError::ParseError("no command provided".to_string())),
+    }
 }
 
 pub enum CliCommand {
