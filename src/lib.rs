@@ -43,7 +43,7 @@ pub struct LegacyTransaction {
 
 impl LegacyTransaction {
     pub fn builder() -> LegacyTransactionBuilder {
-        // TODO: Return a new builder for constructing a transaction
+        LegacyTransactionBuilder::new()
     }
 }
 
