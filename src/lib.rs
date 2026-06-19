@@ -131,12 +131,18 @@ pub fn parse_cli_args(args: &[String]) -> Result<CliCommand, BitcoinError> {
             let address = args
                 .get(2)
                 .ok_or_else(|| BitcoinError::ParseError("missing address".to_string()))?;
-            let amount = u64::from_str(amount_str)
-                .map_err(|e| BitcoinError::ParseError(e.to_string()))?;
-            Ok(CliCommand::Send { amount, address: address.clone() })
+            let amount =
+                u64::from_str(amount_str).map_err(|e| BitcoinError::ParseError(e.to_string()))?;
+            Ok(CliCommand::Send {
+                amount,
+                address: address.clone(),
+            })
         }
         Some("balance") => Ok(CliCommand::Balance),
-        Some(cmd) => Err(BitcoinError::ParseError(format!("unknown command: {}", cmd))),
+        Some(cmd) => Err(BitcoinError::ParseError(format!(
+            "unknown command: {}",
+            cmd
+        ))),
         None => Err(BitcoinError::ParseError("no command provided".to_string())),
     }
 }
